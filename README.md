@@ -1,6 +1,8 @@
 GenWorld
 ========
 
+Version 1.0 jar for Forge 1.7.2 available at: http://adf.ly/lPbmv
+
 Minecraft server world pre-generator created for Forge 1.7.2
 
 Commands
