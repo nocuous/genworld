@@ -21,13 +21,13 @@ import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = ExampleMod.MODID, version = ExampleMod.VERSION)
-public class ExampleMod {
+@Mod(modid = GenWorldMod.MODID, version = GenWorldMod.VERSION)
+public class GenWorldMod {
 	public static final String MODID = "genworld";
 	public static final String VERSION = "1.0";
 
 	@Instance
-	public static ExampleMod instance;
+	public static GenWorldMod instance;
 
 	// Says where the client and server 'proxy' code is loaded.
 	@SidedProxy(clientSide = "com.nocuous.genworld.client.ClientProxy", serverSide = "com.nocuous.genworld.CommonProxy")
@@ -45,7 +45,7 @@ public class ExampleMod {
 
 	@EventHandler
 	public void serverStart(FMLServerStartedEvent event) {
-		proxy.postInit();
+		proxy.serverStart();
 
 	}
 

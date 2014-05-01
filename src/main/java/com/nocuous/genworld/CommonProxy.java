@@ -24,7 +24,7 @@ public class CommonProxy {
 
 	}
 
-	public void postInit() {
+	public void serverStart() {
 		MinecraftServer server = MinecraftServer.getServer();
 		ICommandManager command = server.getCommandManager();
 		ServerCommandManager manager = (ServerCommandManager) command;
