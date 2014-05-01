@@ -14,5 +14,7 @@ Commands
 
 Comming Soon 
 
-/genworld SpawnRadius <radius> - pregenerates chunks in a circle using radius in block coordinates
+/genworld SpawnRadius <radius> - pregenerates chunks in a circle around the world spawn using radius in block coordinates
+
+/genworld radius <x> <y> <radius> - pregenerates chunks in a circle around point x,y using radius in block coordinates
 
