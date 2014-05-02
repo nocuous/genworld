@@ -39,9 +39,10 @@ public class WorldSectorLoader implements Runnable {
 		this.startX = startx;
 		this.startY = starty;
 		this.server = server;
-		this.centerY = startY + height/2;
 		this.centerX = startX + width/2;
+		this.centerY = startY + height/2;
 		this.halfWidth = (((double)width)/2.0) * 16.0;
+		System.out.println("WSL-'" + circleMode + "," +width + "," +height + "," +startX + "," +startY + "," +centerX+ "," +centerY);
 	}
 
 	private boolean isPointWithinCircle(int x, int y)

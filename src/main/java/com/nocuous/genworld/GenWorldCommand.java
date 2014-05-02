@@ -89,14 +89,16 @@ public class GenWorldCommand extends CommandBase {
 		}
 
 		printOutput("Pregenerating world: " + world.provider.getDimensionName());
+		//get spawn point in block coordinates - DEFINITELY NOT CHUNK COORDINATES
 		ChunkCoordinates spawn = world.getSpawnPoint();
-
+		printOutput("Spawn coordinates: " + spawn.posX + "/" + spawn.posY + "/" + spawn.posX);
 		int chunkDimension = size / 16;
 
-		int offsetX = spawn.posX - (size / 2);
-		int offsetY = spawn.posY - (size / 2);
-		WorldSectorLoader wsl = new WorldSectorLoader(world, offsetX / 16,
-				offsetY / 16, chunkDimension, chunkDimension, false, output);
+		int offsetX = (spawn.posX/16) - (chunkDimension / 2);
+		//MC uses Z like bitmap Y
+		int offsetY = (spawn.posZ/16) - (chunkDimension / 2);
+		WorldSectorLoader wsl = new WorldSectorLoader(world, offsetX,
+				offsetY, chunkDimension, chunkDimension, false, output);
 		// world sector loader is a runnable due to previous attempts at
 		// threading it out.
 		wsl.run();
@@ -110,14 +112,17 @@ public class GenWorldCommand extends CommandBase {
 		}
 
 		printOutput("Pregenerating world: " + world.provider.getDimensionName());
+		//get spawn point in block coordinates - DEFINITELY NOT CHUNK COORDINATES
 		ChunkCoordinates spawn = world.getSpawnPoint();
 		int size = radius * 2;
 		int chunkDimension = size / 16;
-
-		int offsetX = spawn.posX - (size / 2);
-		int offsetY = spawn.posY - (size / 2);
-		WorldSectorLoader wsl = new WorldSectorLoader(world, offsetX / 16,
-				offsetY / 16, chunkDimension, chunkDimension, true, output);
+		
+		printOutput("Spawn coordinates: " + spawn.posX + "/" + spawn.posY + "/" + spawn.posX);
+		int offsetX = (spawn.posX/16) - (chunkDimension / 2);
+		//MC uses Z like bitmap Y
+		int offsetY = (spawn.posZ/16) - (chunkDimension / 2);
+		WorldSectorLoader wsl = new WorldSectorLoader(world, offsetX,
+				offsetY, chunkDimension, chunkDimension, true, output);
 		// world sector loader is a runnable due to previous attempts at
 		// threading it out.
 		wsl.run();
