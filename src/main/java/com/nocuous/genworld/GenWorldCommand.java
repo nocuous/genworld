@@ -37,7 +37,7 @@ public class GenWorldCommand extends CommandBase {
 	@Override
 	public String getCommandUsage(ICommandSender var1) {
 		// TODO Auto-generated method stub
-		return "generates the world";
+		return "/genworld - use without any parameters for help with the genworld mod";
 	}
 
 	private WorldServer getWorld(String worldName) {
@@ -73,9 +73,9 @@ public class GenWorldCommand extends CommandBase {
 
 		printOutput("Pregenerating world: " + world.provider.getDimensionName());
 		ChunkCoordinates spawn = world.getSpawnPoint();
-
+		
 		WorldSectorLoader wsl = new WorldSectorLoader(world, xMin / 16,
-				yMin / 16, (xMax - xMin) / 16, (yMax - yMin) / 16, output);
+				yMin / 16, (xMax - xMin) / 16, (yMax - yMin) / 16, false, output);
 		// world sector loader is a runnable due to previous attempts at
 		// threading it out.
 		wsl.run();
@@ -96,12 +96,54 @@ public class GenWorldCommand extends CommandBase {
 		int offsetX = spawn.posX - (size / 2);
 		int offsetY = spawn.posY - (size / 2);
 		WorldSectorLoader wsl = new WorldSectorLoader(world, offsetX / 16,
-				offsetY / 16, chunkDimension, chunkDimension, output);
+				offsetY / 16, chunkDimension, chunkDimension, false, output);
+		// world sector loader is a runnable due to previous attempts at
+		// threading it out.
+		wsl.run();
+	}
+	
+	private void spawnCircle(String worldName, int radius) {
+		WorldServer world = getWorld(worldName);
+		if (world == null) {
+			printOutput("World not found: " + worldName);
+			return;
+		}
+
+		printOutput("Pregenerating world: " + world.provider.getDimensionName());
+		ChunkCoordinates spawn = world.getSpawnPoint();
+		int size = radius * 2;
+		int chunkDimension = size / 16;
+
+		int offsetX = spawn.posX - (size / 2);
+		int offsetY = spawn.posY - (size / 2);
+		WorldSectorLoader wsl = new WorldSectorLoader(world, offsetX / 16,
+				offsetY / 16, chunkDimension, chunkDimension, true, output);
 		// world sector loader is a runnable due to previous attempts at
 		// threading it out.
 		wsl.run();
 	}
 
+	private void circle(String worldName, int x, int y, int radius) {
+		WorldServer world = getWorld(worldName);
+		if (world == null) {
+			printOutput("World not found: " + worldName);
+			return;
+		}
+
+		printOutput("Pregenerating world: " + world.provider.getDimensionName());
+		ChunkCoordinates spawn = world.getSpawnPoint();
+		int size = radius * 2;
+		int chunkDimension = size / 16;
+
+		int offsetX = x - (radius);
+		int offsetY = y - (radius);
+		WorldSectorLoader wsl = new WorldSectorLoader(world, offsetX / 16,
+				offsetY / 16, chunkDimension, chunkDimension, true, output);
+		// world sector loader is a runnable due to previous attempts at
+		// threading it out.
+		wsl.run();
+	}
+	
 	private void printOutput(String text) {
 		if (output != null)
 			output.displayProgressMessage(text);
@@ -116,9 +158,13 @@ public class GenWorldCommand extends CommandBase {
 			printOutput("Not Enough Arguments: /genworld {command arguments}");
 			printOutput("Commands: ");
 			printOutput("SpawnSquare - pregenerates a square around the spawn point.");
-			printOutput("              SpawnSquare <world> <size in blocks>  - Ex: /genworld square Overworld 1000");
+			printOutput("              SpawnSquare <world> <size in blocks>  - Ex: /genworld SpawnSquare Overworld 1000");
 			printOutput("box - pregenerates a user defined rectangle using block coordinates.");
 			printOutput("      box <world> <x min> <y min> <x max> <y max>  - Ex: /genworld box Overworld -500 -500 500 500");
+			printOutput("SpawnCircle - pregenerates a circle around the spawn point.");
+			printOutput("              SpawnCircle <world> <radius in blocks>  - Ex: /genworld SpawnCircle Overworld 500");
+			printOutput("circle - pregenerates a circle at the given coordinates.");
+			printOutput("              SpawnCircle <world> <x> <y> <radius in blocks>  - Ex: /genworld circle Overworld 0 0 500");
 			printOutput("Available Worlds:");
 			printWorlds();
 			output = null;
@@ -175,6 +221,58 @@ public class GenWorldCommand extends CommandBase {
 			}
 
 			box(worldName, xMin, yMin, xMax, yMax);
+		} else if (var2[0].equalsIgnoreCase("spawncircle")) {
+			// pregen world in a square shape centered around the player start
+			if (var2.length != 3) {
+				printOutput("Not Enough Arguments: /genworld SpawnRadius <world> <radius>");
+				output = null;
+				return;
+			}
+
+			printOutput("args: '" + var2[1] + "' '" + var2[2] + "'");
+
+			String worldName = var2[1];
+
+			int size = 0;
+			try {
+				size = Integer.parseInt(var2[2]);
+			} catch (Exception e) {
+				printOutput("Radius was not a number");
+				output = null;
+				return;
+			}
+
+			spawnCircle(worldName, size);
+		}  else if (var2[0].equalsIgnoreCase("circle")) {
+			if (var2.length != 5) {
+				printOutput("Not Enough Arguments: /genworld circle <world> <x> <y> <radius>");
+				output = null;
+				return;
+			}
+
+			printOutput("args: '" + var2[1] + "' '" + var2[2] + "' '" + var2[3]
+					+ "' '" + var2[4] + "'");
+
+			String worldName = var2[1];
+
+			int x = 0;
+			int y = 0;
+			int radius = 0;
+			try {
+				x = Integer.parseInt(var2[2]);
+				y = Integer.parseInt(var2[3]);
+				radius = Integer.parseInt(var2[4]);
+			} catch (Exception e) {
+				printOutput("Size was not a number");
+				output = null;
+				return;
+			}
+
+			circle(worldName, x, y, radius);
+		} 
+		else
+		{
+			printOutput("genworld - Invalid option: " + var2[0]);
 		}
 		printOutput("genworld done");
 		output = null;

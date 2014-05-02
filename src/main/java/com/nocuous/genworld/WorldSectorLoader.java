@@ -1,11 +1,12 @@
 package com.nocuous.genworld;
 
 import net.minecraft.util.IProgressUpdate;
-
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.WorldServer;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
+import net.minecraftforge.common.ForgeChunkManager;
 
 import org.dynmap.*;
 import org.dynmap.forge.DynmapMod;
@@ -18,28 +19,47 @@ public class WorldSectorLoader implements Runnable {
 	private transient int startY;
 	private transient int width;
 	private transient int height;
+	private transient boolean circleMode;
+	private transient int centerX;
+	private transient int centerY;
+	private transient double halfWidth;
 	private transient net.minecraft.world.WorldServer server;
 	private transient IProgressUpdate output;
 
 	public WorldSectorLoader(net.minecraft.world.WorldServer server,
-			int startx, int starty, int width, int height,
+			int startx, int starty, int width, int height,boolean circle,
 			IProgressUpdate progressUpdate) {
 		output = progressUpdate;
 
 		dylistener = new DynmapListener();
 		DynmapCommonAPIListener.register(dylistener);
+		this.circleMode = circle;
 		this.width = width;
 		this.height = height;
 		this.startX = startx;
 		this.startY = starty;
 		this.server = server;
+		this.centerY = startY + height/2;
+		this.centerX = startX + width/2;
+		this.halfWidth = (((double)width)/2.0) * 16.0;
 	}
 
+	private boolean isPointWithinCircle(int x, int y)
+	{
+		double dist = Math.sqrt(Math.pow(centerX*16.0 - x*16.0, 2) + Math.pow(centerY*16.0 - y*16.0, 2));
+		if( dist < halfWidth )
+		{
+			return true;
+		}
+		return false;
+	}
+	
 	public void printOutput(String text) {
 		if (output != null)
 			output.displayProgressMessage(text);
 	}
-
+	
+	
 	@Override
 	public void run() {
 
@@ -68,11 +88,21 @@ public class WorldSectorLoader implements Runnable {
 		for (int x = minX; x < maxX; ++x) {
 			for (int y = minY; y < maxY; ++y) {
 				
+				if( circleMode == true) {
+					//skip positions that are not within the circle when circle mode is enabled.
+					if(!isPointWithinCircle(x,y)) {
+						continue;
+					}
+				}
+				
 				//see if the chunk exists already
 				//if provide chunk returns an empty chunk then the chunk doesn't already exist
 				if (cps.provideChunk(x, y).isEmpty()) {
 					
 					//load chunk will force generate chunks if they do not exist
+				
+					//considering experimenting with ForgeChunkLoader.
+					//Chunk c = ForgeChunkManager.fetchDormantChunk(ChunkCoordIntPair.chunkXZ2Int(x, y), server);
 					Chunk c = cps.loadChunk(x, y);
 					//chunks from load chunk should never be empty.
 					if (c.isEmpty()) {
@@ -172,6 +202,7 @@ public class WorldSectorLoader implements Runnable {
 			// api.triggerRenderOfVolume(server.provider.getSaveFolder(), x*16,
 			// 0, 1, x*16+15, (startY+height)*16, 256 );
 		}
+		
 
 		long endTime = System.currentTimeMillis();
 		printOutput("genworld - " + server.provider.getDimensionName() + " - "
@@ -182,8 +213,12 @@ public class WorldSectorLoader implements Runnable {
 		if( api != null ) {
 			printOutput("genworld - calling dynamp draw");
 			
+			String worldName = server.provider.getSaveFolder();
+			if( worldName == null || worldName == "")
+				worldName = "world";
+			
 			int dynResult = api.triggerRenderOfVolume(
-					server.provider.getSaveFolder(), minX * 16, minY * 16, 0,
+					worldName, minX * 16, minY * 16, 0,
 					maxX * 16, maxY * 16, 255);
 			printOutput("genworld - dynamp result: " + dynResult);
 		}
