@@ -1,7 +1,7 @@
 GenWorld
 ========
 
-Version 1.0 jar for Forge 1.7.2 available at: http://adf.ly/lPbmv
+Version 1.1 jar for Forge 1.7.2 available at: http://adf.ly/lPbmv
 
 Minecraft server world pre-generator created for Forge 1.7.2
 
@@ -14,9 +14,7 @@ Commands
 /genworld box <min x> <min y> <max x> <max y> - pregenerates chunks in a rectangle within the given block coordinates
 
 
-Comming Soon 
+/genworld SpawnCircle <radius> - pregenerates chunks in a circle around the world spawn using radius in block coordinates
 
-/genworld SpawnRadius <radius> - pregenerates chunks in a circle around the world spawn using radius in block coordinates
-
-/genworld radius <x> <y> <radius> - pregenerates chunks in a circle around point x,y using radius in block coordinates
+/genworld circle <x> <y> <radius> - pregenerates chunks in a circle around point x,y using radius in block coordinates
 
