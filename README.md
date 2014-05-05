@@ -19,6 +19,8 @@ Commands
 /genworld circle <x> <y> <radius> - pregenerates chunks in a circle around point x,y using radius in block coordinates
 
 
-Upcoming Changes:
+TODO:
+
 Switch to operating during tick instead of operating on command processing
+
 Test usage of ForgeChunkLoading instead of pulling from ServerChunkProvider
